@@ -1,0 +1,101 @@
+# Introduction to R
+
+This chapter introduces R, a programming language. In doing so, it provides directions on downloading the software and a brief introduction to its use.
+
+## What is R
+
+R is a programming language and environment for data analysis that is popular with researchers from mny discipline.  R refers both to the computer program one runs, as well as the language one uses to alter data within the environment. R only speaks R, and so like traveling to a foreign country one must learn the local language in order to communicate. Fortunately, R’s language is based on English and it wants to be helpful.
+
+## Why learn R? 
+
+There are other statistical packages that similar research methods classes use including Stata and SPSS. The greatest benefit of R is the price: free. Access to Stata for a one semester class costs $45-125, and extended access costs more. R is an open source software that anyone can use free of charge forever. That means whatever skills you learn you can continue to develop after the class ends.
+
+Many people have access to Excel as a spreadsheet program through Microsoft Office, but R is faster and more flexible for data analysis. Excel is a drag-and-drop program that does not produce reproducible analysis. R, as a programming language, allows users to create a ‘script’ that the computer runs in order to output analysis. That means the script can be reusable, shareable, and iterative, which will have significant benefits if you continue with data analysis after the clss. Luckily, R is a relatively straightforward introduction to programming.
+
+## Why learn to program?
+
+Data analytics is a quickly growing field with many job possibilities. The skills you learn in this class, if more fully developed, can be applicable to any industry, from Google to banks to government to a lemonade stand. 
+
+Computer programming is a flexible skill that can help you to manage laborious processes. It can stimulate creative thinking, grow your problem solving capabilities, and can teach persistence. All of that with a valuable labor market skill. 
+
+## The R Programming environment
+
+R can be downloaded from the [r-project.org](https://www.r-project.org/)
+
+There is a link on the left. You’ll need to select a ‘mirror’ to download from. Don’t worry to much about that, the code for R is housed at multiple locations around the world so that it’s always available even if one site gets knocked off line. Generally, you should download from the location that is closest to you, but I’ve never noticed a difference.  For New Orleans, that’s either Oak Ridge, Tennessee or Dallas, Texas. Click the link and follow the directions for installing the program.
+
+## R studio
+The R package you just downloaded can fully operate on its own, but we want to download an additional integrated development environment in order to make using R a little more straight forward. R sStudio uses the R language while organizing our data sets, scripts, and outputs in a more user-friendly format. Luckily, it’s free too and can be downloaded from [rstudio.com](https://www.rstudio.com/products/rstudio/download/).
+Click the link for Rstudio Desktop and follow the prompts to install.
+Note: in order for R Studio to operate R must also be loaded on the computer too. R can operate on its own, and you’re welcome to use it, but class examples will be shown using R Studio.
+
+## Getting started in R studio
+
+Let’s open R Studio and see what we have downloaded.
+
+![](images/Intro 1.png)
+
+The program opens with 3 sections (or boxes) displayed, although there are four. If you click the small green button in the upper left, you can create several types of documents in R. Let’s open a script, which should now add our fourth section.
+
+![](images/Intro 2.png)
+
+The upper left quadrant is called the ‘script’, which is where we can write out codes to be executed. You can enter the code without writing it out first, but by writing in the script we can be preserve and reuse it. If you’re going to use a line of code multiple times, it’s good to have it written because then you can re-execute it without re-writing it. Because scripts can get up into thousands of lines, it’s good to have everything written out so that it can be reviewed and checked. These are like the directions for a recipe we used in baking our data.
+
+In order to execute code that you write in the script, you need to press the ‘run’ button in the upper-center of R studio. That’ll send the code to be executed and provide output below.
+
+The bottom left is the ‘output’. If you write the command 2+5 in your script and run it, that line of code and the result will appear in the output: 7. Any code you run will display itself processing in that section, and any statistics you produce will come at the end (like the answer to 2+5).
+
+The environment in the upper right is where data you have saved into R will appear. You won’t see the data itself, but the environment gives you a record of everything that is available in R Studio for you at that moment.
+
+The bottom right section actually has a few different uses, but we can concentrate now on the graphical output. If we produce a plot or graph of our data, that is where it will appear once the data has executed. The picture below shows all 4 sections in use.
+
+
+![](images/Intro 3.png)
+
+
+That’s an introduction to R Studio. There are many helpful videos that can provide more information, but as with many things in R it’s easier to understand through use rather than explanation, so as the semester goes we will get more comfortable.
+
+Let's quickly review some of the things we can do in R that are most useful. I would recommend creting  script in R Studio and entering and running these commands as they are outlined. Tht applies to future chapters as well. Reding a desctiption of operations is a good start, but much of coding is muscle memory and takes practice at the syntax and structure of commands.
+
+We can use it as a calculator by entering math equations:
+
+```{R, echo=T}
+2+5
+```
+
+```{R, echo=T}
+7/2+7*8+1+9-4
+```
+
+R is an object oriented programming language, so we generally want to save what we do by assigning it a name. We can assign things with an arrow: <-
+
+```{R, echo=T}
+x <- 7
+print(x)
+```
+
+We can also store lists as an object by placing c in front of parentheses.
+
+```{R, echo=T}
+y <- c(1, 4, 6)
+print(y)
+```
+
+Better yet, we can use whole data sets with multiple columns and rows. R actually comes with a lot of data sets built into it's software. We'll use those data sets all semester to create examples. You can see the data that is present in R by writing data() and you can call one of those data sets out of the background into being used by writing data() with the name of the desired data set inside.
+
+```{R, echo=T}
+data("cars")
+cars[1:10,]
+```
+
+We can see the data we have, and we can make graphs with it using plot()
+
+```{R, echo=T}
+plot(cars)
+```
+
+There are a lot of idiosyncrasies of using any programming language. The best way to read this book is to follow along with the examples. Each chapter will provide more practice, and this book is searchable if you ever need to go back and find an example of doing some operation.
+
+The next chapter will introduce one of the many uses we'll have for R: creating data-driven documents with Markdown.
+
+

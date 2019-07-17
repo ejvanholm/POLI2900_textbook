@@ -1,0 +1,17 @@
+--- 
+title: "Introduction to Stats using R"
+author: "Eric van Holm, PhD"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+description: "This is a textbook written for Poli 2900 at the University of New Orleans."
+---
+
+# Forward
+
+This book is written for use in POLI 2900: Methods of Political Research at the University of New Orleans. This book is being first written for the Fall of 2019, but will continue to be updated after that class. In this book I cover quantitative research techniques common to the social sciences as well as developing student’s skills in programming. To learn programming and to practice quantitative techniques we will discuss R, a popular programming language for data scientists and researchers. This book is written with the goal of explaining the concepts and code to students with zero previous background in coding or data analysis. 
+
+The emphasis of this book is not on doing math manually or calculation, but rather on interpretation. Every statistic used is described, but more discussion is placed on the practical applications and how to interpret or use the results that R produces. 

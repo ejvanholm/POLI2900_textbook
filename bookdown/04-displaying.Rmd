@@ -1,0 +1,298 @@
+```{r, echo=F}
+library(pander)
+```
+
+# Displaying Data
+
+Last chapter we met the struggle of having too much data. We laid out 420 enrollments figures for California schools, and 420 data points is hard to digest (and there are many data sets with millions of rows). Descriptive statistics offered ways to summarize that data and provide some order to the mess.
+
+Another effective way of summarizing large quantities of data is to graph it. Graphing data is also a great way to look at multiple varaibles simultaneously and examine relationships between them. 
+
+Creating a basic plot in R takes only a few lines of code, but it is important to be mindful of how *best* to display data.
+
+## Data Types
+
+Let’s begin then by taking a half step back. Last week we started working with data, but we can first talk a bit more about different types of data.
+
+There are three types of data
+
+* Numerical
+* Categorical
+* Ordinal
+
+### Numerical Data
+
+Numerical data has numbers. Numerical data is that which can be counted: the number of books you own, hairs on your head, wings on a pterodactyl, ounces of water in a glass, sand on the beach, and on and on. Numerical data further comes in two distinct forms: discrete and continuous
+
+#### Numerical - Discrete
+
+Discrete data comes in amounts that can possibly be counted. For instance, there is some number of items in your fridge currently. It may be 0, it may be 5, it could be 37. If you took them all out, you could count them, and there would be a finite number of items to count.
+
+```{r}
+fridge <- 41 
+```
+
+#### Numerical - Continuous
+
+On the other hand, continous data is not possible to count. Imagine counting the seconds someone ran a 40 yard dash. It could be 10 seconds, or 10.1, or 10.01, or 10.001, or... you get it. And that's only starting at 10. There are an infinite number of times someone could possibly run a 40 yard dash. An easy rule is that if the numbers are counted with decimals, then it is continious.
+
+```{r}
+sprint <- 9.73 
+```
+
+### Categorical
+
+Categorical data refers to categories or characteristics. Those could be hair color, color of shoes, car type, lanuage spoken, etc. Those variables will generally not be recorded as numbers, but rather using characters or words.
+
+```{r}
+shoes <- "brown"
+```
+
+### Ordinal
+
+Ordinal data is similar to categorical data, in that it refers to categories. However, it has a certain order. Categorical data like shoe color doesn't have any particular hierarchy, green, brown, blue - none of those are the highest color of shoes or the lowest. Ordinal data does have an order. Take for instance happiness: how happy do you feel today? Very happy is higher than happy, which is higher that unhappy. Different answers to how happy you are fall into an implicat range that has some order.
+
+```{r}
+happiness <- "Very Happy" 
+```
+
+
+```{r}
+df <- c(fridge, sprint, shoes, happiness)
+df
+```
+
+Okay, so those are the typical forms of data that we'll encounter. Let's take a look at some real data though, and review each type. Also, we'll go over how to convert data between types for use.
+
+We'll use a data set politicalInformation from the package pscl.First we'll need to load the pscl package using library(pscl), and once we have the data loaded we can review each variable.
+
+```{r}
+library(pscl)
+data(politicalInformation)
+names(politicalInformation)
+```
+
+
+```{r}
+table(politicalInformation$y)
+```
+
+**y** is a rating given to each individual on their political knowledge. These reviews were provided by the surveyers. As shown above, they range from "Very Low" to "Very High", so they're ordinal data because of their ranking. Currently they written as chracters. They could also be written as numbers though, with 5 as the highest level and 1 as the lowest level by using the as.numeric() command. That can change a character to a number. We'd need to write down what each means, but we can create a new variable that's numeric. In addition, that varaible would be discrete, since there are only 5 values.
+
+```{r}
+politicalInformation$yNUM <- as.numeric(politicalInformation$y)
+table(politicalInformation$yNUM)
+```
+
+```{r}
+table(politicalInformation$collegeDegree)
+```
+**collegeDegree** measures whether the individual had graduated college or not.There are a lot of ways to measure education, you can do it by asking how many years the person had been in school total (12 is a typical number for someone that gruadted college) or you could have addiitonal levels, such as "not a high school graduate", "high school graduate", "college graduate". Here, they've just measured whether the person has graduated colelge or not, and it is recorded with a Yes or No. That means the data is currently categorical, some people are in the category of college graduates, others aren't. We can convert this variable to numerical as well using the ifelse() command. With ifelse we specify what we want to test (does collegeDegree equal Yes?) and say what we want to happen if that's true (1) and what should happen if not (0). See the example below.
+
+```{r}
+politicalInformation$collegeDegreeNUM <- ifelse(politicalInformation$collegeDegree=="Yes", 1, 0)
+table(politicalInformation$collegeDegreeNUM)
+
+```
+
+```{r}
+table(politicalInformation$female)
+```
+**female** is very similar to collegeDegree. It is categorical, with Yes if the respondant is female and no if not. We could convert that to numeric just like above by making females 1 and males 0. Or we could create a new varaible for if the respondant was male. These variables are also considered dichotomous (which means one of two things). They take on two values, yes/no, 1/0.
+
+```{r}
+politicalInformation$male <- ifelse(politicalInformation$female=="No", 1, 0)
+table(politicalInformation$female)
+table(politicalInformation$male)
+
+```
+
+```{r}
+pander(table(politicalInformation$age))
+```
+
+**age** is numeric and discrete. Age can be measured in seconds or minutes, which would make it continuous and difficult to count, but here it is a series of integers.
+```{r}
+table(politicalInformation$homeOwn)
+```
+**homeOwn** measures whether the individual owns a home, and is categorical and dichotomous.
+```{r}
+table(politicalInformation$govt)
+```
+**govt** measures whether the individual works for the government, and is categorical and dichotomous.
+```{r}
+table(politicalInformation$length)[1:10]
+```
+**length** measures the length of each interview. It's rounded here to the second second, but it is numerical and continuous. There are a lot of values, so I'm only showing the top 10.
+```{r}
+table(politicalInformation$id)[1:10]
+```
+**id** is the id for the interviewer and it is numerical and discrete. It is included so that if there are differences in how the surveryers rated people consistently (maybe intervier 1 was really nice, maybe interviewer 2 had a bad day and was mean) we can control for their role in the scores.
+
+
+
+## Graphing Categorical and Ordinal
+
+Okay, why such a long detour into data types. As I've already shown above, we can convert all of the data to numerical using commands like as.numeric() or ifelse(). It's because the type of data you start with, wether it's numerical, ordinal, or categorical, will have a significant impact on the correct way to graph it. And graphing data is really important for communicating data to your bossess or the public. People will flip through a report to find the pictures, which is good because graphs are a fantastic way to tell the story. With a good graph, a picture really is worth one-thousand words. 
+
+To illustrate, let's start with a bad graph, using the same data we've talked about in this chapter. How many of the individuals that were surveyed were rated with each of the 5 categories of political knowledge?
+
+```{r}
+table(politicalInformation$y)
+```
+
+We can graph that result by using the plot() command. We'll use plot() a lot in this chapter, it's the simplest way to create a graph in r, and then we can customize every feature around it. First we'll need to save the output of table showing how many people got each score; we'll save it below as yplot.
+
+```{r}
+yplot <- table(politicalInformation$y)
+plot(yplot, type="b", ylab="")
+```
+
+That looks okay. It's a line graph, which you may have guessed since there is a very prominent line on it. Let me highlight two aspects of this graph, which is true for other graphs too and should be something encountered in other math classes. The line sticking up with the numbers here - that's the y-axis. The other line with the ratings  (but it could be numbers too) - that is the x-axis. We'll use those terms in the future.
+
+We can see that very few people were rated Very Low, and that the largest number were rated as Average. Doesn't this perfectly communicate the information? The name of the game in graphing is efficiency - always aim to use the least ink to communicate the most information.
+
+```{r}
+plot(yplot, type="b", ylab="")
+arrows(3.1, 300, 2.4, 430)
+```
+
+What exactly is the value at the end of that arrow? It looks to be about 430. Are there 430 people that are between Fairly Low and Average? No, the survey didn't give that as a rating. It's a small issue, but the line implies there are values that don't exist. It's inefficient and doesn't make sense. So should we just get rid of the line?
+
+```{r}
+plot(yplot, type="p", ylab="")
+```
+
+No more line, great. But that's a lot of blank space. It communites how many people are in each category, but this may be too little ink. This is a scatterplot, because you scatter points across the graph (the names don't get any more creative, trust me). This is okay, but it isn't much to look at. 
+
+So we've started with two graphs that communicate the same information, and even do so mostly honestly. But also aren't great. To put the rule simply, for categorical data you shouldn't use a line or scatter plot. How should you graph it then? I've been controlling the type of plot that displays with the command type= below, if we remove that R will use the default for this type of data.
+
+```{r}
+plot(yplot, ylab="")
+```
+
+This is similar to a barplot, which uses a bar that represents the value of each category. We can make it look a bit better by using a specialize command for barlots, barplot()
+
+```{r}
+barplot(yplot)
+```
+
+That looks pretty good. Each person that was rated Very Low is represented in that bar, and you can quickly see which category was largest and their relative size. We've added some ink, but this graph is easy to see and read. There's another option worth considering.
+
+```{r}
+pie(yplot)
+```
+
+A piechart can also be an effective way to communicate categorical data. You can see the relative size of each group, and they add up to 100% of the survey. However, it can be a little more difficult to compare here. Without looking above, which is larger, Fairly Low or Very High? And how many rated as Fairly Low? We've lost the scale with this chart. We could add that information manually, but pie charts are dangerous for that reason. They're an inefficient way to communicate information. Let's take that problem to an extreme with the variable for age, and then that will be the last pie chart in this book.
+
+```{r}
+ageplot <- table(politicalInformation$age)
+pie(ageplot)
+```
+
+Pie charts can communicate relative values (which slice is largest) and shouldn't be used for more than 3 categories. But they should be avoided, because there are easier ways to communicate data.
+
+Before we leave categorical data, let's take a moment to go over the features of barplot(). I meantioned that you can customize anything, what is that 'anything'? You can see details by typing ??barplot into the console. I'm going to use a few features, but figuring out how best to set them for any given graph will just take some practice and thinking about what communicates the information to you.
+
+* the first item yplot, specifies the data that we're graphing
+* width specifies how wide we want the bars
+* col changes the color of the bars, here I've chosen steelblue but there are a lot of colors that are options. Check out all the colors [here](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
+* border changes the color of the borders for the bar
+* ylim changes how long the yaxis should be. R will guess how tall it should be, but sometimes you'll want to adjust it manually.
+
+```{r, echo=T}
+barplot(yplot, width=.75, col="steelblue", border="black", ylim=c(0, 700))
+```
+
+One difference between categorical and ordinal data comes up in how you should arrange it on a plot. Let's take a look at another plot of the data on political inforamtion. I'm going to reorganize the x-axis.
+
+```{r, echo=T}
+yplot2 <- sort(yplot)
+barplot(yplot2, width=.75, col="steelblue", border="black", ylim=c(0, 700))
+```
+
+Now the data is in order, which makes it easier to see the realtive ranks of each of the levels of political knowledge. We could probably tell that more people were rated as Fairly Low than Very High before, but now it's very clear. Do you see any problems with this plot?
+
+It's ordinal data, so it can confuse people if the values aren't in order. Seeing Very Low next to Very High can be a bit confusing. We've added a bit of clarity, with a bit of confusion. If you're plotting ordinal data with a bar plot, it's best to keep it in the original order. It can make more sense though with categorical data.
+
+```{r, echo=T}
+HairEyeColor <- as.data.frame(HairEyeColor)
+iplot <- aggregate(Freq~Eye, FUN=sum, data=HairEyeColor)
+iplot <- table(agg$Freq)
+barplot(iplot$Freq, width=.75, col="steelblue", border="black", names.arg=iplot$Eye)
+```
+
+There's no natural hierarchy to eye color, so it makes sense to place those in order on a graph. Yuu can put the alrgest category on the right or left side, that doesn't make a large difference. But what if you're not graphing categorical or ordinal data?
+
+## Graphing Numerical Data
+
+We've already discussed when *not* to use scatterpots or line graphs, let's talk about the appropriate data to graph with those now: hint, it's numerical data.
+
+Why? Because with line and scatter plots you want the x and y-axis to have more length or values than categorical data normally offers.
+
+Line graphs are partiuclarly good for plotting values that we measure over time. Let's take a look at the US population from 1790 to 1970.
+
+```{r, echo=T}
+data("uspop")
+uspop <- as.data.frame(uspop)
+plot(uspop)
+```
+
+That graphs the realtionship pretty clearly, US population has increased over that time span. Let's add a few more details, changing the names of the axes (ylab= and xlab=) and makiong the line a little thicker (lwd=) and red (col=)
+
+```{r, echo=T}
+plot(uspop, ylab="US Population", xlab="Year", lwd=3, col="red")
+```
+
+Great. But we should note one thing about this graph. Earlier I said not to use a line graph for the data on political information because we didn't know the values between our different categories. Here, we only have data for each decade when the Census is conducted. So we know what the US population was in 1790 and 1800, but we don't know what it was in 1795. Yet, we have a lane that is estimating the population in that year. Why is that okay?
+
+It isn't always, but here it is because 1795 did have a value. Half-way between Very Low and Fairly Low didn't exist, but there was a US population in 1795. We can use the two values from 1790 and 1800 to estimate it, and we might be a little off but we're probably close. We're assuming that the population grew at the same rate every year in between those points, which might not be right, but it gets us close to the truth we hope. We could add points for the dates we do have to better clarify this idea with type="b" to specify we want both (the b) points and a line on the graph.
+
+```{r, echo=T}
+plot(uspop, ylab="US Population", xlab="Year", lwd=3, col="red", type="b", pch=16)
+
+```
+
+Now the dots identify where we did have a measurement, and the line is showing a guess at where the population was in between. More importnatly, the line helps to highlight the trend.
+
+A line graph typically has few observations (we have 16 here) and they are all connected in a continuous line (time only moves forward). One great feature of line graphs is that we can add a second line (or more). Generally, you'll need to make sure that both lines are in the same unit. If we wanted to add a line to the plot above we'd want to make sure that it's something measured over time, and more importnatly that population is on the y-axis.
+
+Let's take a look at two lines for presidential elections in Louisiana. I can use par(new=T) to add the second line, and lines() to graph it. We'll use the command subset() to limit the data just to Louisiana.
+
+```{r, echo=T}
+library(politicaldata)
+data("pres_results")
+pres_results_LA <- subset(pres_results, state=="LA")
+plot(pres_results_LA$year, pres_results_LA$rep, ylab="% Vote for President", xlab="Year", lwd=3, col="red", type="b", pch=16, ylim=c(0,1))
+par(new=T)
+lines(pres_results_LA$year, pres_results_LA$dem,lwd=3, col="blue", type="b", pch=16)
+
+```
+
+If you do add a second line to a line graph, it's important to add a legend to identify which line is which. We've used the traditional colors of the Republican and Democratic party so it might be clear, but if you handed this to an alien they might not understand it. We can add a legend with the legend() command. We need to specify where we want the legend on the plot, identifying where on teh x and y axis it should sit, and the labels we want shown.
+
+```{r, echo=T}
+library(politicaldata)
+data("pres_results")
+pres_results_LA <- subset(pres_results, state=="LA")
+plot(pres_results_LA$year, pres_results_LA$rep, ylab="% Vote for President", xlab="Year", lwd=3, col="red", type="b", pch=16, ylim=c(0,1))
+par(new=T)
+lines(pres_results_LA$year, pres_results_LA$dem,lwd=3, col="blue", type="b", pch=16)
+legend(2005, .9, legend=c("Dem", "Rep"), col=c("blue", "red"), lty=1, lwd=3)
+```
+
+Check this [link from the R Graph Gallery](https://www.r-graph-gallery.com/119-add-a-legend-to-a-plot/) if you want more details about creating a legend, or search the help in R.
+
+So a line graph is best for data that has a linear relationship to it. Even if the percentage vote for Democrats and Republicans doesn't move up or down consistently, time moves forward. On the other hand, a scatter plot isbetter for data that can move in any direction on both axes.
+
+Let's take a look at data on the relationship with murder rates and assault rates at the state level.
+
+```{r}
+data(USArrests)
+plot(USArrests$Assault, USArrests$Murder, pch=16)
+```
+
+That data is very scattered, but it forms a relationship. Knowing the assault rate of a state would help you to predict the murder rate. That is, states with higher assault rates have higher murder rates, and vice versa. That's good to know if you're wondering what a state's murder rate is, but you only know the assault rate. They aren't perfectly related, knowing one doesn't exactly predict the other, but it's a useful relationship. 
+
+Scatter plots shouldn't just be used if there is a relationship between two varaibles, but they are a useful way for displaying correlations. That is the topic of the next chapter.
+

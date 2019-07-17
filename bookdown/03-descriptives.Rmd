@@ -1,0 +1,313 @@
+# Descriptive Statistics
+
+***
+**Chapter Summry**
+
+* Descriptive statistics are a first step from raw data towards something more meaningful.
+* The most common descriptive statistics either identify the middle of the data (mean, median) or how spread out the data is around the middle (percentiles, standard deviation)
+* The statistics we calculate as descriptive statistics will be useful for many of the more advanced lessons we'll encounter later
+
+***
+
+Descriptive statistics are useful for exactly what it sounds like it would be: describing something. Specifically, describing data. Why does data need to be described? Because raw data is difficult to digest and a single data point doesn't tell us very much.
+
+```{r, echo=TRUE, quiet=TRUE}
+library(AER)
+library(pander)
+data("CASchools")
+pander(CASchools[410,])
+```
+
+Let’s say I have data on all schools in California. I can look at the raw data and see that Moraga Elementary has 1885 students. That’s good to know, but it raises questions. Is that a lot? A raw data point like that without context is generally useless. Someone in that school district might be able to appreciate what the number 1885 students means implicitly. You might be thinking about whether it’s larger or smaller than you remember your elementary school being, or the school of a child/relative. 
+
+Adding more data doesn't necessarily help. Let's look at the student enrollments of all the schools.
+
+```{r, echo=TRUE, quiet=TRUE}
+library(AER)
+library(pander)
+data("CASchools")
+pander(CASchools$students)
+```
+
+Now we have a lot more data, but those don't tell us much. It's more thn we can quickly interpret. We can't judge whether Moraga is bigger than normal or smaller, because it's hard to get a grasp of what the data is telling us with just raw figures or find trends.
+
+We can better appreciate Moraga's enrollment though calculating some descriptive statistics for California schools in order to supply the context. We can provide summary statistics with the command summary() and pander() to make the output more visually appealing. Pander on it's own wont do much, but if it's wrapped around summary we get a prettier table.
+
+```{r, echo=TRUE, quiet=TRUE}
+summary(CASchools$students)
+pander(summary(CASchools$students))
+```
+
+This is a fairly typical list of summary statistics. We should start in the middle, with two values that can be used to measure 'central tendancy'. Median and mean are both designed to help us understand the middle of the data.
+
+## Median
+
+* Median. This is the middle value of your data. If you lined up 9 numbers in a row (from lowest to highest) it would be the 5th number in that line. It's always the middle value. 
+
+Let's imagine I asked 25 students how large their family is. To calcuate the median by hand, you can write the numbers in order and find the middle digit. If with R you can use median().
+
+```{r, echo=TRUE}
+fam <- c(1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5)
+median(fam )
+```
+
+## Mean
+
+*mean. This is the average value in your data. To calculate it, you add up all the individual values and divide it by the total number of observations. Or in R, you can use mean()
+
+```{r, echo=TRUE}
+(1+1+1+2+2+2+2+3+3+3+3+3+4+4+4+4+5+5+5)/21
+mean(fam )
+```
+
+Sometimes, like in the examples above, those two numbers are the same thing. Why do we need both a mean and median then? Because they often aren't the same, and that tells us something important about the data. 
+
+***
+**Interpretation Note**
+
+The **median** student enrollment for California schools is 950.5, meaning that 50% of Schools have fewer students. 
+The **mean** or average student enrollment for California school is 2629.
+
+***
+
+In the California school data the median was 950.5 and the mean was 2629. That is a sizeable gap. And the school we started with, Morgana, is larger than the median but smaller than the mean. What does that mean? It means the data is skewed. 
+
+Let's look back at data we made up earlier for the size of familes.
+
+```{r}
+barplot(table(fam), ylim=c(0, 8))
+abline(v=3.1, col="blue", lty=3, lwd=4)
+text(3.6, 6, "Median = 3")
+text(2.6, 6, "Mean = 3")
+```
+
+That is what we call a normal distribution, where half of the data falls above the mean/median, and half below. If we had more data, it would form the shape of a large bell, which gave it the name of a bell curve. We'll keep comming back to bell curves later in this section, but for now we can just say that if our data has a normal distribution we can use the mean or median and get similar results.
+
+But we didn't get similar results in California. Let's look at the distribution for the data on student enrollment.
+
+```{r}
+barplot(table(round(CASchools$students, -2)), ylim=c(0, 80))
+text(13, 65, "Median = 950.5")
+text(13, 60, "Mean = 2627")
+segments(2, 0, 2, 60, col="red", lty=3, lwd=4)
+segments(3.5,  0, 3.5, 56, col="blue", lty=3, lwd=4)
+```
+
+## Skew
+
+That doesn't look like a bell at all. Rather it's skewed. Skew just means not symmetrical, which in this context means that the distribution is not evenl around the mean and median like our earlier example. It's heavily skewed to the right, or dragged out to that end. There's  a long tail of data that is much larger than the mean and median. Those big schools have a large impact on the mean, but less of one on the median. To illustrate that, let's say I ask two more people about their families, and they both have a lot of relatives (17 and 19).
+
+***
+**Interpretation Note**
+
+**Skewed** data means that the data is not symetrical, or doens't have an even number of observations below and above the mean. Data can be right skewed or left skewed; data skews in whatever direction the tail is extended out on, not the side that data is bunched.
+
+***
+
+```{r, echo=TRUE}
+fam <- c(1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,17,19)
+mean(fam )
+median(fam)
+```
+
+The median stays the same even if it's shifted which of the 3 peoples families was the middle answer. However, the mean has increased by over 1 because of thos extreme answers. The same issue is present for the schools data. While most schools are small, half have fewer than one thousand students, there are many that are very large that drag the mean upwards. That isn't bad, it's why we have two measures of central tendency. 
+
+So which one is best? To some degree, it depends on what you're trying to answer.
+
+If the median and mean differ significantly it is probably best to report both, or use the median. The median will always be in the middle of your data (the exact middle) so it's a more consistent measure of central tendancy. 
+
+## Percentile
+
+When we're using skewed data, it's really useful to use percentiles to figure out where a specific observation falls in the data. The median is the 50th percentile, because 50 percent of the data is above and below it. The 25th percentile is also known as the 1st quartile (that was in the summary statistics above) has 25 percent of the data below it and 75 percent above it. For California schools, 25 percent of schools have 379 students or fewer, while 75 percent have more. The 3rd quartile, or 75th percentile, was 3008. That means 75 percent of schools have fewer that 3008 students, and only 25 percent have more. 
+
+***
+**Interpretation Note**
+
+A value's **percentile** indicates the percentage of values below that number.
+25 percent of observations have are below the **1st quartile** or the **25th percentile**, and 75 percent have higher
+Half of schools have more and less than the **50th percentile** aka the **median**
+25 percent of observations are below the **3rd quartile** or **75th percentile**, and 75 percent have less.
+
+***
+
+Moraga had 1885 students, so it has more students than at least half the schools in California. What percent of schools does it have more than? I can add a column to the data frame (assigning it the name percentile) to figure out the percentile for each school in the data.
+
+```{r}
+CASchools$percentile <- ecdf(CASchools$students)(CASchools$students)
+CASchools$percentile[410]
+```
+
+Moraga is in the 63rd percentile, so it has more students that 63 percent of California schools. 
+
+Let's go back to our summary statistics from earlier to finish discussing all the metrics contained there.
+
+```{r, echo=TRUE, quiet=TRUE}
+pander(summary(CASchools$students))
+```
+
+We've discussed the 1st Qu., Median, Mean, and 3rd Qu. That leaves the Min and Max, which represent the highest and lowest figures in the data. The smallest school in the data has 81 students, while the largest has 27,176 students. Those figures help us to get a feel for how spread out our data will be. The fact that the largest observation is 10 times larger than the mean indicates there are a few large observations, and a lot of small schools all clustered  below the mean.
+
+***
+**Interpretation Note**
+
+The **minimum** is the smallest figure in a data set. The smallest California school in terms of student enrollment has 81 students.
+The **maximum** is the largest figure in the data. The largest* California school in terms of student enrollment has 27,126 students.
+
+*It's important when saying something like largest or smallest to specify the measure you're using. What school is the largest in terms of square footage, or student weight, or most buildings.
+
+***
+
+So the median is probably more useful in this case, if we're trying to understand how big a school is. That'll be true with most data that is skewed, or doesn't follow a normal distribution. But in other cases the mean will be just as useful, and we'll use it for the calcuation of other statistics as well.
+
+For instance, we'll use the mean to calculate the standard deviation of data.
+
+## Standard Deviation
+
+Standard deviation is a measure of the variability of your data. We've discussed two measures of the middle (mean and median), now we want to know where all the other data fall around that middle. Are they very close to the middle? Do they spread out really wide?
+
+To calculate the standard deviation by hand we need to:
+
+1. Calcualte the mean 
+2. Substract each individual observation from the mean, and square the result
+3. Calculate the mean of the squared differences.
+4. Calcuate the square root of each figure.
+
+That's a mouth full. Or, we can use the command sd(). sd() takes care of all the intermediate steps outlined above.
+
+Standard deviation indicates how disperesed your data is, or how widely it spreads around the mean. Data that has a small standard deviation generally falls very close to the mean; data with a large standard deviation is highly dispersed. The standard deviation gives you evidence of how representative the mean is of the data. If the data is very disperesed, each individual observation might be far from the mean.
+
+Let's imagine you're choosing where to go for dinner. There are two new places you've heard about and want to check out; you look at yelp and see they have really similar ratings (out of 5). We'll call one Oscars's and one Luis's (based on restaurants I like in my home town) and look at the average ratings at both.
+
+```{r, echo=F}
+Luis <- c(5, 1, 5, 1, 2, 5,  1, 5, 5, 5, 5, 4, 5, 5, 5, 1, 5, 1, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5)
+Oscars <- c(4, 4, 3, 5, 4, 4, 4, 4, 5, 4, 3, 4, 4, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 4, 5)
+```
+
+```{r, echo=T}
+mean(Luis)
+mean(Oscars)
+```
+
+That's pretty close. It's tough to pick between them. So you look closer and notice that Luis's has really high variance in it's reviews. There are a lot of 5s, but also a lot of 1s. Oscars on the other hand is more consisntently rated around a 4. For Luis's, the mean isn't very indicative of the typical experience, but for Oscar's you know what to expect with just that number. That's because Luis's data is more disperesed.
+
+```{r, echo=T}
+sd(Luis)
+sd(Oscars)
+```
+
+Why? It turns out that Luis brother works as a chef, and is awful. So anytime anyone rates the restaurant after eating one of the dishes cooked by him, it gets a bad review. But the other cooks are top notch. On the other hand, Oscar's chefs are far more consistent. So the choice would depend on whether you want a chance at the better meal and are willing to take a risk on getting food poisioning, or if you'd rather just know that your food will be good - but not great.
+
+So which restaurant do you want to go to? You plan ahead and call Luis's to find out if his brother is working the day of your dinner, and finding out that he is home sick (he ate his own cooking apparently) you make a reservation for Luis's.
+
+Let's circle back to California schools. We know how large Moraga is roughly. Let's look at some of the other variables that are in the data. 
+
+```{r}
+pander(CASchools[410,])
+```
+
+Read and math refer to the average scores for the school on state achievement tests. Notice that the figure is a descriptive statistic, being the average score for students at the school. Moraga students got 695.7 on math. Is that good or bad? The numbers don't mean anything without context. Is the score out of 696, meaning that Moraga was nearly perfect, or is it out of 10,000 and students were very not nearly perfect. Let's look again at summary statistics for the state to try and understand.
+
+```{r}
+pander(summary(CASchools$math))
+```
+
+Moraga scores above the mean and median for the state. That's  goodd, and they were also above the 3rd quartile, meaning that at least 75 percent of schools performed worse.
+
+Notice that the median and mean for this figure are very close together. That means reporting either statistics will be good enough, and that the data isn't skewed in either direction. The data forms what we would call a normal distribution (we used that term above). Let's look at the data for math scores in a graph. 
+
+```{r, echo=TRUE}
+hist(CASchools$math, breaks=25, col="steelblue")
+
+```
+
+You can see the outline of a bell there, even if it's still imperfect. That's really useful, because it means that roughly half of the observations fall above and below the mean. That means we can talk about the distance of an individual school from the average in standard units with the standard deviation.
+
+We know Moraga did well on the tests, but how well?
+
+```{r}
+695.7-653.3
+```
+
+
+They scores 42 points higher than the average school, but that doesn't help us understand just how well they did. To get a better idea, we need to know how widely school math scores were distributed, to better appreciate how much better 42 points makes a school.
+
+```{r, echo=T}
+sd(CASchools$math)
+```
+
+The standard deviation is 18.7. It probably doesn't feel like that tells you much yet, but it will. The great thing about standard deviation is that when they're taken for normally distributed data (like average math scores in California schools) we can use them to figure out just how above or below average a given school is. 
+
+That's because 50% of the data falls above and below the mean, and the same is true for the standard deviations. But the data also falls above and below the mean in a specific form or shape.
+
+![credit: Wikipedia](images/Standard_deviation.png)
+
+50 percent of the data is below and above the mean in the figure above, which has a mean of 0 (the greek character \omega means standard deviation). But just as importantly, we know where that 50 percent falls. 34.1 percent of the data falls within 1 standard deviation. 13.6 percent falls between 1 and 2 standard deviations, and 47.7 falls between the mean and 2 standard deviations. And those figures are symmetircal on both sides. That might not seem exciting yet, but let's go back to our earlier question. How good at math is Moraga. First, let's see how many standard deviations it is above the mean for math scores. We need to find the difference between the Moraga score and the average score for the state, and divide that by the standard deviation.
+
+```{r, echo=T}
+(695.7-mean(CASchools$math))/sd(CASchools$math)
+```
+
+Moraga is 2.25 standard deviations above the mean. That means that it is better than 95% of schools in the state. That's pretty good.
+
+That may all sound a lot like the percentiles that we calculated earlier. In fact, Moraga is in the 98 percentile for math scores. So why do we need two figures? Percentiles are more flexible, and can be useful for any data no matter the distribution. 
+
+However, standard deviation is useful for comparing two numbers with different units. Units refers to how we measure something, whether it be students, or math scores, or shoes, or dollars, or anything.
+
+Moraga is 42 points above average in math scores, and their parents reported 15,735 more dollars than average in annual income. Which of those numbers is more impressive or further from the mean? Well, 15,735 is larger than 42, but beause income and math scores are in different units, it's a lot like comparing apples to pterodactyls. But standard deviations allow us to figure out the relative distance both have from the means.
+
+```{r, echo=T}
+(695.7-mean(CASchools$math))/sd(CASchools$math)
+(31.052-mean(CASchools$income))/sd(CASchools$income)
+
+```
+
+They're both well above average, but the math score is slightly *more* above average.
+
+In addition to comparing different units, standard errors are used in calculating a lot of the tests we use to determine whether numbers are meaningful. It will come up a lot in future chapters, so understanding the basic idea as a descriptive statistic is worth your time.
+
+***
+**Interpretation Note**
+
+**Standard deviation** measures the dispersion of our data, and allows us to assess how many standard deviations an observation is from the mean of that data. Much of the data will fall within 1 standard deviation above or below the data, if it is shaped like a bell curve, so values above 2 standard deviation are thought to be very different from the average
+
+***
+
+In this chapter, we've gone over one way to summarize data and to make raw data and figures more understandable for ourselves and others. Let's review the R commands we've done in this chapter.
+
+We can call in data that is already loaded into r with data(). Let's use a data set about Arrest rates in American states.
+
+```{r}
+data("USArrests")
+```
+ To see the top 5 lines of the data we can use the command head() or to see the bottom we can use tail()
+
+```{r}
+head(USArrests)
+tail(USArrests)
+```
+
+We can use summary to view the descriptive statistics we went over earlier
+
+```{r}
+summary(USArrests)
+```
+
+In order to make a more attractive table in Markdown, we want to use pander(). We need to load pander in though, because it's an additional package. If you haven't loaded in before use insall.packages("pander") before calling it into use with library(pander)
+
+```{r}
+library(pander)
+pander(summary(USArrests))
+```
+
+in order to just calculate the mean or median for one column we can use mean() or median(), in order to measure the middle of the data.
+
+```{r}
+mean(USArrests$Murder)
+median(USArrests$Murder)
+```
+
+And finally, we can calcualte the dispersion or standard deviation with sd()
+
+```{r}
+sd(USArrests$Murder)
+```

@@ -1,0 +1,244 @@
+# R Markdown Guide
+
+## What is Markdown
+
+Markdown is an interactive system of text formatting that is useful wy to produce documents when using data and statistics. If you’ve ever produced a graph in Excel to put in a Word document, what do you have to do? Create the graph in excel, copy and paste it into Word, and probably redo the formatting to make it fit. R Markdown allows us to create the graph in our document using the R language, and automatically formats it. Over a lifetime of writing data-driven documents, it can save significant time and reduce the frustration of formatting and reformatting images. R Markdown is *designed* to make life easier for you.
+
+By the way, everything you’re reading is written in R Markdown. I never could have completed this book if I had to manually insert all the graphs and functions, I’ll show you this semester. For instance, I probably saved 10 minutes on just this plot.
+
+```{r, echo=T}
+data(USJudgeRatings)
+plot(USJudgeRatings$DECI, USJudgeRatings$PREP,
+     main="Relationship Between Judge Preperation and Decisions",
+     pch=16, col="blue")
+```
+
+## Getting Started
+
+Let’s start with the basics. How to create an R Markdown document. 
+
+1. Open R Studio
+2. Click on the upper left icon with white document and green plus sign.
+
+![](images/Markdown 1.png)
+
+3. In the drop down menu there is an option for R Markdown, click on it which will bring up a new screen.
+
+![](images/Markdown 2.jpg)
+4. For now, let’s create our Markdown documents as PDFs. Enter any title you want and your name.
+
+5. Once you click OK, your new markdown will open with some sample code inserted. Let’s see what a finished R Markdown document looks like with that preset code, so click Knit. First, you will need to run this bit of code in R Studio install.packages("TinyTeX").
+
+![](images/Markdown 3.jpg)
+
+6. After you click Knit you’ll need to tell R where you want to save the document. If this was a part of an assignment you’d probably want to use a file you have for your class projects. For this document the desktop or downloads file will work.
+
+7. Voila, you’ve created a Markdown document! Let’s look closer at the anatomy of a Markdown document by looking at the code that was created in R Studio.
+
+![](images/Markdown 4.jpg)
+
+The arrows highlight some important features to get us started.
+
+a. This is the knit button, which we've already met.
+b. This is  code chunk. Much of what you write in a Markdown will just work as text, unless you put it in a code chunk. A code chunk starts with three ` (whcih are named back quotes, should be to the left of the numbers on your keyboard) and {r}. To close a code chunk you just put the three backquotes.That tells R that you'd like to write something in code, like printing a table or a graph. Otherwise, a Markdown document is just a written document and you can say something like 2 + 5 without it trying to create interpret that as a math statement.
+c. This is a heading. The reason that it shows in blue is because it isn't just text, it has something added to it - the two hashtags that preceed it means it will print larger and bold 
+d. This is another code chunk
+e. This will print as plain text
+f. This final bit of text introduces an important feture of Markdown documents. if you insert echo=TRUE to your code chunk, the code you use will appear as part of the document, and if you write echo=FALSE it will not. If you're writing a document that will be printed for the public, you might not want your code to show. If you're turning in an assignment to your teacher, they'll probably want to see your code.
+
+We’ll talk a lot more about the ways we can use R with Markdown this semester, and we’ll practice inserting code and graphs. For now, we need to focus on the text aspect of R Markdown. Some of this has been previewed above, but here I list many of the ways you can format your text in a Markdown document.
+
+## Markdown Format Cheatsheet
+
+This section describes and displays many of the ost common formatting commands in Markdown. 
+
+---
+
+### Headers
+
+```
+# Heading One (h1)
+
+## Heading Two (h2)
+
+### Heading Three (h3)
+
+#### Heading Four (h4)
+
+##### Heading Five (h5)
+
+###### Heading Six (h6)
+```
+
+![headings](images/heading_format.png)
+
+
+---
+
+
+
+### Text Style
+
+```
+With Markdown, it is possible to emphasize words by making them *italicized*, using *astericks* or _underscores_, or making them **bold**, using **double astericks** or __double underscores__. 
+
+Of course, you can combine those two formats, with both _**bold and italicized**_ text, using any combination of the above syntax. 
+
+You can also add a strikethrough to text using a ~~double tilde~~.
+```
+
+With Markdown, it is possible to emphasize words by making them *italicized*, using *astericks* or _underscores_, or making them **bold**, using **double astericks** or __double underscores__. 
+
+Of course, you can combine those two formats, with both _**bold and italicized**_ text, using any combination of the above syntax. 
+
+You can also add a strikethrough to text using a ~~double tilde~~.
+
+
+---
+
+### Lists
+
+#### Unordered
+
+```
+* First item
+* Second item
+* Third item
+    * First nested item
+    * Second nested item
+```
+* First item
+* Second item
+* Third item
+    * First nested item
+    * Second nested item
+
+#### Ordered
+
+```
+1. First item
+2. Second item
+3. Third item
+    1. First nested item
+    2. Second nested item
+```
+1. First item
+2. Second item
+3. Third item
+    1. First nested item
+    2. Second nested item
+
+
+---
+
+
+
+### Hyperlinks
+
+Create links by wrapping the link text in square brackets [ ], and the URL in adjacent parentheses ( ). 
+
+```
+[Google News](https://news.google.com)
+```
+
+[Google News](https://news.google.com)
+
+
+---
+
+
+
+### Images
+
+Insert images in a similar way, but add an exclamation mark in front of square brackets ![ ], and the image file name goes in the parentheses ( ). 
+
+```
+![alt_text_here](image_file.png)
+```
+
+The *alt text* appears when the image cannot be located, or is read by devices for the blind when the mouse hovers over the image. It 
+
+It is common practice to place all of the image files in an "assets" or "images" folder to keep your directory tidy. You can reference files inside a folder using the folder name and the forward slash:
+
+```
+![credit: Shutterstock, but why?](images/shutterstock_professor.jpg)
+```
+
+![credit: Shutterstock, but why?](images/shutterstock_professor.jpg)
+
+
+---
+
+Or you can link directly to an image online using the URL address of the image:
+
+```
+![](https://cdn-image.travelandleisure.com/sites/default/files/styles/1600x1000/public/1507062474/hotel-everest-namche-nepal-mountain-lodge-MOUNTAIN1017.jpg)
+```
+
+![](https://cdn-image.travelandleisure.com/sites/default/files/styles/1600x1000/public/1507062474/hotel-everest-namche-nepal-mountain-lodge-MOUNTAIN1017.jpg)
+
+
+---
+
+
+
+### Tables
+
+```
+| Title 1          | Title 2          | Title 3         | Title 4         |
+|------------------|------------------|-----------------|-----------------|
+| First entry      | Second entry     | Third entry     | Fourth entry    |
+| Fifth entry      | Sixth entry      | Seventh entry   | Eight entry     |
+| Ninth entry      | Tenth entry      | Eleventh entry  | Twelfth entry   |
+| Thirteenth entry | Fourteenth entry | Fifteenth entry | Sixteenth entry |
+
+```
+
+| Title 1          | Title 2          | Title 3         | Title 4         |
+|------------------|------------------|-----------------|-----------------|
+| First entry      | Second entry     | Third entry     | Fourth entry    |
+| Fifth entry      | Sixth entry      | Seventh entry   | Eight entry     |
+| Ninth entry      | Tenth entry      | Eleventh entry  | Twelfth entry   |
+| Thirteenth entry | Fourteenth entry | Fifteenth entry | Sixteenth entry |
+
+
+---
+
+
+
+
+
+
+
+### Blockquotes
+
+#### Single line
+
+```
+> The purpose of life is to contribute in some way to making things better. - Robert F. Kennedy
+```
+> The purpose of life is to contribute in some way to making things better. - Robert F. Kennedy
+
+#### Multiline
+
+```
+> Every time we turn our heads the other way when we see the law flouted, when we tolerate what we > know to be wrong, when we close our eyes and ears to the corrupt because we are too busy or too > frightened, when we fail to speak up and speak out, we strike a blow against freedom and decency > and justice.
+>
+> – _Robert F. Kennedy_
+```
+
+> Every time we turn our heads the other way when we see the law flouted, when we tolerate what we > know to be wrong, when we close our eyes and ears to the corrupt because we are too busy or too > frightened, when we fail to speak up and speak out, we strike a blow against freedom and decency > and justice.
+>
+> – _Robert F. Kennedy_
+
+
+
+---
+
+### Horizontal Rule
+
+```
+---
+```
+
+---

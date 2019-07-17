@@ -1,0 +1,146 @@
+# Correlations
+
+Have you ever heard someone say "that's just correlation, not causation!" Ww'll talk about both parts of that statement in this chapter. Yes, correlation isn't causation, but it's also an important part of figuring out if something causes something else. Let's start with the definition of correlation, and we'll talk about causation at the end.
+
+According to the Free Dictionary.com, correlation is
+
+> A relationship or connection between two things based on co-occurrence or pattern of change
+
+That works. Let's break it apart.
+
+A correlation can be calculated for two things, say murder and urban population. A co-occurance or pattern of change means that the two things happen together. If I look at a state with a higher assault rate, we'll probably find a state with a higher murder rate (Chapter 5). The two things, higher murder and high assault rates, occur in teh same states, and low murder and low assault rates occur in the same states.
+
+We can figure out what that relationship is more formally by calcuating the correlation coefficient.
+
+To really understand the correlation coefficient, it's necessary to walk through the math. That's important because we need to talk about standardizing units. Let's say we want to know if there is a strong correlation between parental income and math scores for schools; we can answer that quesiton using the California schools data we had in a previous chapter. Do we think schools that one average have higher parental incomes do better or worse on standardized test? One issuse is that income and tests come in different units. Income is measured in dollars while tests are in points.
+
+Read Book fill in
+
+```{r}
+library(AER)
+data("CASchools")
+pander(summary(CASchools$math))
+pander(summary(CASchools$income))
+
+```
+
+
+What we need to do is standardize the units so that we can properly compare.
+
+1. First we need to calculate the mean and standard deviation for income and math 
+
+```{r}
+Imean <- mean(CASchools$income)
+Mmean <- mean(CASchools$math)
+Isd <- sd(CASchools$income)
+Msd <- sd(CASchools$math)
+
+```
+
+We can use the mean and standard deviation to standardize the units for heigh and weight. We'll add a new column for both that calcualtes how many standard deviatons each individual heigh and weight is from the mean for both.
+
+```{d}
+CASchools$incomestd <- (CASchools$income-Imean) / Isd 
+CASchools$mathstd <- (CASchools$math-Mmean) / Msd 
+
+```
+
+And yes, we could have done that with out saving the mean and standard deviation as seperate objects. But I thought it woudl be useful to break it down into each step, but you could have skipped those earlier steps.
+
+```{d}
+CASchools$incomestd <- (CASchools$income-mean(CASchools$income)) / sd(CASchools$income) 
+CASchools$mathstd <- (CASchools$math-mean(CASchools$math)) / sd(CASchools$math) 
+
+```
+
+Okay, now we have both varaibles in standardized units, which means the fact they're measured in heigh and weight no longer matters. We just know how far from the mean both are. 
+
+We can now calcualte the correlation coefficient by multiplying the two standardized units and saving that as a new varaible called IxM (for income x math). Then we'll take the sum of those multiplications with the command sum(). Multiplying the differences helps us to know how far apart both income and math scores are from the mean for each school If the numbers are correlated, a person that is much taller than average should also be much heavier. By taking the sum of those figures, we can figure out how the two varaibles differ across everyone in the data.
+
+```{d}
+CASchools$IxM <- CASchools$incomestd*CASchools$mathstd
+IxMsum <- sum(CASchools$IxM)
+```
+
+The final step to calculating the correlation coefficient is to divide those sums by the size of the data set -1. We can figure that out by asking r how many rows are in the data with nrow(). The correlation coefficient is generally identified with the letter r, no relation to R software.
+
+```{d}
+r <- IxMsum/(nrow(CASchools)-1)
+r
+```
+
+And yes, there is a way to make R do all the work for us. The command is cor() with the two variables inserted inside the parenthesis. But doesn't it feel good to have done that for ourselves?
+
+```{d}
+cor(CASchools$income, CASchools$math)
+```
+
+So what does a correlation of .699 mean? It means the data is pretty correlated. Let's visualize.
+
+```{d}
+plot(CASchools$income, CASchools$math, pch=16)
+```
+
+Knowing a school's average parental income is generally a good predictor of their math scores. Schools with wealthier parents have children that perform better. There are a lot of reasons for that association, but what we've shown here is that they are associated at least in this data.
+
+Correlation coefficients can range from 1 to -1, and can fall anywhere in between. 
+
+![credit: Wikipedia](images/Correlation_coefficient.png)
+
+A correlation of 1 shows that the relationship is positive. A positive relationship indicates that if a variable is higher on one quality, it'll be higher on the other as well. If parental income perfectly predicted the schools math scores, then we'd have a correlation of 1. We don't though, it was .69, so it's a good predictor but not perfect.
+
+A correlation of -1 means the opposite, if something is higher on one quality it'll be lower on the other. To visualize a strong negative correlation, let's look at the percentage of students on free lunches at schools and their math scores (free lunches is a typical measure for poverty)
+
+```{d}
+cor(CASchools$lunch, CASchools$math)
+plot(CASchools$lunch, CASchools$math, pch=16)
+```
+
+Schools with more students on free lunches do worse on math tests on average. Schools with fewer students on free lunches perform better. Knowing one varaible will help you to predict the other, but not perfectly. 
+
+What about somethign with a weaker relationship? Let's see how well school expenditures correlate with math test scores. You might expect schools that spend more to perform better, becuase they an hire better teachers, offer smaller classes, and more activities, right?
+
+```{d}
+cor(CASchools$expenditure, CASchools$math)
+plot(CASchools$expenditure, CASchools$math, pch=16)
+```
+
+Actually, the relationship is pretty weak in the data. A correlation coefficient of .15 is positive, meaning that a higher value in one variable does predict a higher value in the other, but not by much. The data is generally bundled up in the middle.
+
+How do we evaluate whether a correlation is strong or not? There are general rules for what is a strong, moderate, or weak correlation, although they aren't set in stone.
+
+A strong correlation is between .5 (or -.5) and 1 (-1).
+
+A moderate correlation is between .5 (-.5) and .3 (-.3).
+
+A weak correlation is between .3 (-.3) and .1 (-.1).
+
+And if it falls between .1 and -.1, it's just said to not correlate.
+
+Those aren't firm rules. How much stronger is a correlation that is .31 vs .29? Not very much. Thus, those categories should be taken as rough guidelines.
+
+In the end, we'll use a bit more math to really evaulate how strong a correlation is in a few chapters. There are tests to figure out not just whether they too variables move up and down together, but whether that relationship would be predicted just by change. For now though, correlation is an effective way to communicate whether two variables are related.
+
+But does that mean they cause each other? Do we know that higher parental income causes school math scores to be higher? Not just because of the correlation, no. 
+
+For one thing, correlations can't determine directions. Could school math scores be causes parental incomes to rise? That's unlikely, but the correlation coefficient alone can't tell us what is causing waht to increase. All we know is that they both rise together in our data.
+
+There are three criteria for to assert casuality (that A causes B):
+
+1. Covariation
+2. Temporal Precedence
+3. Elimination of Extraneous Variables
+
+Covariation is what we've been measuring. As one varaible moves, the other variable moves along with it.
+
+Temporal precedence refers to the timing of the two variables. In order for A to cause B, A must preceed B. I cause the TV to turn on by pushing a button, you wouldn't say the TV turning on caused me to push a button. The measurement for parental income omes before the math tests here, so we do have temporal precedence. And math scores didn't help parents to earn more, unless the state has introduced some sort of test reward system for parents.
+
+So what about Extraneous Variables. We don't just need to prove that income and math scores are correlated and that the income preceeded the tests. We need to prove that nothing else could explain the relationship. Is the parental income really the cause of the scores, or is it the higher education of parents (which helps them earn more)? Is it because those parents could help thier children with math homework at night, or because they could afford math camps in the summer? There are lots of things that would correlate with parental income, that would also correlate with school math scores. Until we can elimiate all of thsoe possibilities, we can't say for sure that parental income causes higher math scores.
+
+These issues have arisen in the real world. A while back someone realized that children with more books in their home did better on reading tests. So nonprofits and schools started giving away books, to try and ensure every student would have books and do better on tests.
+
+What happened? Not much. The books didn't make a difference, having parents that would read them every night did, along with many other factors (having a consistent home to store them at, parents that could afford books, etc.). That's why it's important to eliminate every other possible explanation.
+
+Let's look at one more example. [Homeschools students do better](https://www.theatlantic.com/health/archive/2011/09/study-of-the-day-home-schooled-children-score-higher-on-tests/245036/) than those in public school. Great! Let's homeschool everyone, right?
+
+Well, homeschooled students do better on average, but that's probably related to the fact they have families with enough income for one parent to stay home and not work regularly and they have a parent that feels comfortable teaching (high education themselves). Just based off that, I'm guessing that shutting down public schools and sending everyone home wont send scores skyrocketing. But there is still a correlation between home schooling and scores, but it may not be causal.
