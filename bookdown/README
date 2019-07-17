@@ -1,0 +1,6 @@
+library( "rmarkdown" )
+library( "bookdown" )
+setwd( "~/Dropbox (ASU)/class/UNO Stats/textbook" )
+
+bookdown::render_book( "index.Rmd", "bookdown::gitbook" )
+bookdown::render_book( 'index.Rmd', 'bookdown::pdf_book' )
